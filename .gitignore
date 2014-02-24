@@ -1,0 +1,10 @@
+.project
+.settings
+.metadata
+*redcar*
+*geany*
+*error_log*
+*.DS_Store*
+*.sublime-*
+node_modules
+*~
