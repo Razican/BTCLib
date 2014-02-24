@@ -1,19 +1,84 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
+/**
+ * CodeIgniter Bitcoin class
+ *
+ * This class enables the communication with the Bitcoin's
+ * JSON-RPC API.
+ *
+ * @package		CodeIgniter
+ * @subpackage	Libraries
+ * @category	Libraries
+ * @author		Razican
+ * @link		https://github.com/Razican/BTCLib
+ */
 class Bitcoin {
 
+	/**
+	 * Url of the JSON-RPC connection
+	 *
+	 * @var string
+	 */
 	private $url;
+
+	/**
+	 * If the server is connected through SSL
+	 *
+	 * @var bool
+	 */
+	private $is_ssl;
 
 	/**
 	 * Creates a Bitcoin connection.
 	 **/
-	public function __construct()
+	public function __construct($config = array())
 	{
-		$this->url = (config_item('server_is_ssl') ? 'https://' : 'http://').
-						config_item('server_user').':'.config_item('server_pass').'@'.
-						config_item('server_name').':'.config_item('server_port').'/';
+		if ( ! empty($config) &&
+			isset($config['bitcoin_ssl']) && is_bool($config['bitcoin_ssl']) &&
+			isset($config['bitcoin_user']) && is_string($config['bitcoin_user']) &&
+			isset($config['bitcoin_pass']) && is_string($config['bitcoin_pass']) &&
+			isset($config['bitcoin_server']) && is_string($config['bitcoin_server']) &&
+			isset($config['bitcoin_port']) && is_int($config['bitcoin_port']) &&
+			$config['bitcoin_port'] >= 1024 && $config['bitcoin_port'] <= 65535)
+		{
+			$this->initialize($config);
+		}
+		elseif ( ! empty($config))
+		{
+			log_message('error', 'Invalid configuration provided for the Bitcoin library');
+			show_error('Invalid configuration provided for the Bitcoin library', 500);
+		}
+		else
+		{
+			$this->url = null;
+		}
 
-		log_message('debug', 'Bitcoin connection set, with URL '.$this->url);
+		log_message('debug', 'Bitcoin library initialized');
+	}
+
+	/**
+	 * Initialize the connection settings
+	 *
+	 * Accepts an associative array as input, containing connection settings
+	 *
+	 * @param	array $config connection settings
+	 * @return
+	 */
+	public function initialize($config = array())
+	{
+		foreach ($config as $key => $val)
+		{
+			if (isset($this->$key))
+			{
+				$this->$key = $val;
+			}
+		}
+
+		// Set the next_prev_url to the controller if required but not defined
+		if ($this->show_next_prev === TRUE && empty($this->next_prev_url))
+		{
+			$this->next_prev_url = $this->CI->config->site_url($this->CI->router->class.'/'.$this->CI->router->method);
+		}
 	}
 
 	/**
@@ -596,6 +661,12 @@ class Bitcoin {
 	 **/
 	private function connect($method, $params = array())
 	{
+		if (is_null($this->url))
+		{
+			log_message('error', 'No configuration supplied for the Bircoin library.');
+			show_error('No configuration supplied for the Bircoin library.', 500);
+		}
+
 		$id = mt_rand(1, 1000000);
 
 		// prepares the request
@@ -607,7 +678,7 @@ class Bitcoin {
 		$request	= json_encode($request);
 
 		// performs the HTTP POST
-		$opts		= array((config_item('server_is_ssl') ? 'https' : 'http') => array(
+		$opts		= array(($this->is_ssl ? 'https' : 'http') => array(
 						'method'  => 'POST',
 						'header'  => 'Content-type: application/json',
 						'content' => $request
