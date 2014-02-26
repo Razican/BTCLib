@@ -33,25 +33,7 @@ class Bitcoin {
 	 **/
 	public function __construct($config = array())
 	{
-		if ( ! empty($config) &&
-			isset($config['bitcoin_ssl']) && is_bool($config['bitcoin_ssl']) &&
-			isset($config['bitcoin_user']) && is_string($config['bitcoin_user']) &&
-			isset($config['bitcoin_pass']) && is_string($config['bitcoin_pass']) &&
-			isset($config['bitcoin_server']) && is_string($config['bitcoin_server']) &&
-			isset($config['bitcoin_port']) && is_int($config['bitcoin_port']) &&
-			$config['bitcoin_port'] >= 1024 && $config['bitcoin_port'] <= 65535)
-		{
-			$this->initialize($config);
-		}
-		elseif ( ! empty($config))
-		{
-			log_message('error', 'Invalid configuration provided for the Bitcoin library');
-			show_error('Invalid configuration provided for the Bitcoin library', 500);
-		}
-		else
-		{
-			$this->url = null;
-		}
+		$this->initialize($config);
 
 		log_message('debug', 'Bitcoin library initialized');
 	}
@@ -66,18 +48,31 @@ class Bitcoin {
 	 */
 	public function initialize($config = array())
 	{
-		foreach ($config as $key => $val)
+		if ( ! empty($config) &&
+			isset($config['bitcoin_ssl']) && is_bool($config['bitcoin_ssl']) &&
+			isset($config['bitcoin_user']) && is_string($config['bitcoin_user']) &&
+			isset($config['bitcoin_pass']) && is_string($config['bitcoin_pass']) &&
+			isset($config['bitcoin_server']) && is_string($config['bitcoin_server']) &&
+			isset($config['bitcoin_port']) && is_int($config['bitcoin_port']) &&
+			$config['bitcoin_port'] >= 1024 && $config['bitcoin_port'] <= 65535)
 		{
-			if (isset($this->$key))
-			{
-				$this->$key = $val;
-			}
-		}
+			$this->is_ssl = $config['bitcoin_ssl'];
 
-		// Set the next_prev_url to the controller if required but not defined
-		if ($this->show_next_prev === TRUE && empty($this->next_prev_url))
+			$this->url = $this->is_ssl ? 'https://' : 'http://';
+			$this->url .= $config['bitcoin_user'].':'.$config['bitcoin_pass'];
+			$this->url .= '@'.$config['bitcoin_server'].':'.$config['bitcoin_port'];
+
+			log_message('debug', 'Bitcoin library configured');
+		}
+		elseif (empty($config))
 		{
-			$this->next_prev_url = $this->CI->config->site_url($this->CI->router->class.'/'.$this->CI->router->method);
+			$this->url = null;
+			log_message('debug', 'No configuration supplied for the Bitcoin library.');
+		}
+		else
+		{
+			log_message('error', 'Invalid configuration provided for the Bitcoin library');
+			show_error('Invalid configuration provided for the Bitcoin library', 500);
 		}
 	}
 
@@ -91,6 +86,7 @@ class Bitcoin {
 	 **/
 	public function backupwallet($destination)
 	{
+		touch($destination);
 		return $this->_connect('backupwallet', array(realpath($destination)));
 	}
 
@@ -618,7 +614,7 @@ class Bitcoin {
 			return NULL;
 		}
 
-		return in_array($error_code, array(-32600, -32601, -32602, -32603, -32700);
+		return in_array($error_code, array(-32600, -32601, -32602, -32603, -32700));
 	}
 
 	/**
@@ -635,7 +631,7 @@ class Bitcoin {
 			return NULL;
 		}
 
-		return in_array($error_code, array(-1, -2, -3, -5, -7, -8, -20, -22);
+		return in_array($error_code, array(-1, -2, -3, -5, -7, -8, -20, -22));
 	}
 
 	/**
@@ -719,8 +715,8 @@ class Bitcoin {
 	{
 		if (is_null($this->url))
 		{
-			log_message('error', 'No configuration supplied for the Bircoin library.');
-			show_error('No configuration supplied for the Bircoin library.', 500);
+			log_message('error', 'No configuration supplied for the Bitcoin library.');
+			show_error('No configuration supplied for the Bitcoin library.', 500);
 		}
 
 		$id = mt_rand(1, 1000000);
