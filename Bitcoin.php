@@ -81,6 +81,9 @@ class Bitcoin {
 		}
 	}
 
+// TODO addmultisigaddress($nrequired, $keys, $account)
+// TODO addnode($node, $action)
+
 	/**
 	 * Safely copies wallet.dat to destination, which can be a directory or a path with filename.
 	 *
@@ -90,6 +93,12 @@ class Bitcoin {
 	{
 		return $this->connect('backupwallet', array(realpath($destination)));
 	}
+
+// TODO createmultisig($nrequired, $keys)
+// TODO createrawtransaction($tranzaction, $data)
+// TODO decoderawtransaction($hexstring)
+// TODO dumpprivkey($bitcoinaddress)
+// TODO encryptwallet($passphrase)
 
 	/**
 	 * Returns the account associated with the given address.
@@ -111,16 +120,25 @@ class Bitcoin {
 		return $this->connect('getaccountaddress', array((string) (int) $account));
 	}
 
+// TODO getaddednodeinfo($dns, $node)
+// TODO getaddressesbyaccount($account)
+
 	/**
 	 * Returns the balance in the account.
 	 *
 	 * @param (int) account - The account to check
 	 * @param (int) minconf - The minimum confirmations needed for a transaction to be considered as confirmed
 	 **/
-	public function getbalance($account, $minconf = 6)
+	public function getbalance($account, $minconf = 1)
 	{
 		return $this->connect('getbalance', array((string) (int) $account, (int) $minconf));
 	}
+
+// TODO getbestblockhash($index)
+// TODO getblock($hash)
+// TODO getblockcount()
+// TODO getblockhash($index)
+// TODO getblocktemplate($params)
 
 	/**
 	 * Returns the number of connections to other nodes.
@@ -132,6 +150,10 @@ class Bitcoin {
 		return $this->connect('getconnectioncount');
 	}
 
+// TODO getdifficulty()
+// TODO getgenerate()
+// TODO gethashespersec()
+
 	/**
 	 * Returns an object containing various state info.
 	 **/
@@ -139,6 +161,8 @@ class Bitcoin {
 	{
 		return $this->connect('getinfo');
 	}
+
+// TODO getmininginfo()
 
 	/**
 	 * Returns a new bitcoin address for receiving payments.
@@ -151,6 +175,11 @@ class Bitcoin {
 		return $this->connect('getnewaddress', array((string) (int) $account));
 	}
 
+// TODO getpeerinfo()
+// TODO getrawchangeaddress($account)
+// TODO getrawmempool()
+// TODO getrawtransaction($txid, $verbose)
+
 	/**
 	 * Returns the total amount received by the account in transactions with a minimum confirmations.
 	 *
@@ -161,6 +190,8 @@ class Bitcoin {
 	{
 		return $this->connect('getreceivedbyaccount', array((string) (int) $account, (int) $minconf));
 	}
+
+// TODO getreceivedbyaddress($bitcoinaddress, $minconf)
 
 	/**
 	 * Returns an object about the given transaction containing:
@@ -178,6 +209,13 @@ class Bitcoin {
 		return $this->connect('gettransaction', array((string) $txid));
 	}
 
+// TODO gettxout($txid, $n, $includemempool)
+// TODO gettxoutsetinfo()
+// TODO getwork($data)
+// TODO help($command)
+// TODO impòrtprivkey($bitcoinprivkey, $label, $rescan)
+// TODO keypoolrefill()
+
 	/**
 	 * Returns Object that has account names as keys, account balances as values.
 	 *
@@ -188,6 +226,8 @@ class Bitcoin {
 		return $this->connect('listaccounts', array((int) $minconf));
 	}
 
+// TODO listaddressgroupings()
+
 	/**
 	 * Returns an array of objects containing:
 	 *		account - the account of the receiving addresses
@@ -197,7 +237,7 @@ class Bitcoin {
 	 * @param (int) minconf - The minimum confirmations needed for a transaction to be considered as confirmed
 	 * @param (bool) includeempty - Wether to include account with no transactions
 	 **/
-	public function listreceivedbyaccount($minconf = 6, $includeempty = TRUE)
+	public function listreceivedbyaccount($minconf = 1, $includeempty = FALSE)
 	{
 		return $this->connect('listreceivedbyaccount', array((int) $minconf, (bool) $includeempty));
 	}
@@ -212,10 +252,12 @@ class Bitcoin {
 	 * @param (int) minconf - The minimum confirmations needed for a transaction to be considered as confirmed
 	 * @param (bool) includeempty - Wether to include account with no transactions
 	 **/
-	public function listreceivedbyaddress($minconf = 6, $includeempty = TRUE)
+	public function listreceivedbyaddress($minconf = 1, $includeempty = FALSE)
 	{
 		return $this->connect('listreceivedbyaddress', array((int) $minconf, (bool) $includeempty));
 	}
+
+// TODO listsinceblock($blockhash, $target-confirmations)
 
 	/**
 	 * Returns the most recent transactions skipping the first given transactions for the given account.
@@ -246,7 +288,7 @@ class Bitcoin {
 		}
 	}
 
-	//TODO ^
+//TODO ^
 
 	/**
 	 * Returns array of unspent transaction inputs in the wallet.
@@ -276,6 +318,9 @@ class Bitcoin {
 			}
 		}
 	}
+
+// TODO listlockunspent()
+// TODO lockunspent($unlock, $array-of-objects)
 
 	/**
 	 * Move from one account in your wallet to another. It won't use Bitcoin network, and thus,
@@ -392,6 +437,8 @@ class Bitcoin {
 		}
 	}
 
+// TODO sendrawtransaction($hexstring)
+
 	/**
 	 * Sends money to a given address using the default account.
 	 *
@@ -423,25 +470,8 @@ class Bitcoin {
 		}
 	}
 
-	/**
-	 * Sign a message with the private key of an address.
-	 *
-	 * @param string $bitcoinaddress The address to use for signing
-	 * @param string $message The message to sign
-	 * @return string|object The signed message, or the error object
-	 **/
-	public function signmessage($bitcoinaddress, $message)
-	{
-		$result = $this->connect('signmessage', array((string) $bitcoinaddress, (string) $message));
-		if ( ! is_null($error = $this->_get_error($result)))
-		{
-			return $error;
-		}
-		else
-		{
-			return $result;
-		}
-	}
+// TODO setaccount($bitcoinaddress, $account)
+// TODO setgenerate($generate, $genproclimit)
 
 	/**
 	 * Sets the new fee for transactions.
@@ -472,6 +502,30 @@ class Bitcoin {
 	}
 
 	/**
+	 * Sign a message with the private key of an address.
+	 *
+	 * @param string $bitcoinaddress The address to use for signing
+	 * @param string $message The message to sign
+	 * @return string|object The signed message, or the error object
+	 **/
+	public function signmessage($bitcoinaddress, $message)
+	{
+		$result = $this->connect('signmessage', array((string) $bitcoinaddress, (string) $message));
+		if ( ! is_null($error = $this->_get_error($result)))
+		{
+			return $error;
+		}
+		else
+		{
+			return $result;
+		}
+	}
+
+// TODO signrawtransaction($hexstring, $transaction, $privatekey)
+// TODO stop()
+// TODO submitblock($hexdata, $optional_params_obj)
+
+	/**
 	 * Return information about a given address.
 	 *
 	 * @param string $bitcoinaddress The address to check
@@ -491,7 +545,7 @@ class Bitcoin {
 	}
 
 	/**
-	 * Sign a message with the private key of an address.
+	 * Verify a signed message.
 	 *
 	 * @param string $bitcoinaddress The address used for signing
 	 * @param string $signature The signature resulted from signing
@@ -532,7 +586,7 @@ class Bitcoin {
 	 * @return bool|object TRUE if everithing went OK, FALSE if $timeout wasn't an int and
 	 *						error object if there was an error
 	 **/
-	public function walletpassphrase($passphrase, $timeout = 5)
+	public function walletpassphrase($passphrase, $timeout)
 	{
 		if ( ! is_int($timeout))
 		{
@@ -614,7 +668,7 @@ class Bitcoin {
 	{
 		if ( ! is_int($error_code))
 		{
-			log_message('error', 'Bad data received for $value at bitcoin->_is_rpc_error()');
+			log_message('error', 'Bad data received for $error_code at bitcoin->_is_rpc_error()');
 			return NULL;
 		}
 		else
