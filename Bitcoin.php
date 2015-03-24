@@ -109,11 +109,11 @@ class Bitcoin {
 	/**
 	 * Returns the current bitcoin address for receiving payments to this account.
 	 *
-	 * @param (int) account - The account to check
+	 * @param (string) account - The account to check
 	 **/
 	public function getaccountaddress($account)
 	{
-		return $this->_connect('getaccountaddress', array((string) (int) $account));
+		return $this->_connect('getaccountaddress', array((string) $account));
 	}
 
 // TODO getaddednodeinfo($dns, $node)
@@ -122,12 +122,12 @@ class Bitcoin {
 	/**
 	 * Returns the balance in the account.
 	 *
-	 * @param (int) account - The account to check
+	 * @param (string) account - The account to check
 	 * @param (int) minconf - The minimum confirmations needed for a transaction to be considered as confirmed
 	 **/
-	public function getbalance($account, $minconf = 1)
+	public function getbalance($account = "*", $minconf = 1)
 	{
-		return $this->_connect('getbalance', array((string) (int) $account, (int) $minconf));
+		return $this->_connect('getbalance', array((string) $account, (int) $minconf));
 	}
 
 // TODO getbestblockhash($index)
@@ -164,11 +164,11 @@ class Bitcoin {
 	 * Returns a new bitcoin address for receiving payments.
 	 * It is added to the address book so payments received with the address will be credited to the account.
 	 *
-	 * @param (int) account - The account for the new address
+	 * @param (string) account - The account for the new address
 	 **/
 	public function getnewaddress($account)
 	{
-		return $this->_connect('getnewaddress', array((string) (int) $account));
+		return $this->_connect('getnewaddress', array((string) $account));
 	}
 
 // TODO getpeerinfo()
@@ -179,12 +179,12 @@ class Bitcoin {
 	/**
 	 * Returns the total amount received by the account in transactions with a minimum confirmations.
 	 *
-	 * @param (int) account - The account to check
+	 * @param (string) account - The account to check
 	 * @param (int) minconf - The minimum confirmations needed for a transaction to be considered as confirmed
 	 **/
-	public function getreceivedbyaccount($account, $minconf = 6)
+	public function getreceivedbyaccount($account, $minconf = 1)
 	{
-		return $this->_connect('getreceivedbyaccount', array((string) (int) $account, (int) $minconf));
+		return $this->_connect('getreceivedbyaccount', array((string) $account, (int) $minconf));
 	}
 
 // TODO getreceivedbyaddress($bitcoinaddress, $minconf)
@@ -209,7 +209,7 @@ class Bitcoin {
 // TODO gettxoutsetinfo()
 // TODO getwork($data)
 // TODO help($command)
-// TODO impòrtprivkey($bitcoinprivkey, $label, $rescan)
+// TODO importprivkey($bitcoinprivkey, $label, $rescan)
 // TODO keypoolrefill()
 
 	/**
@@ -217,7 +217,7 @@ class Bitcoin {
 	 *
 	 * @param (int) minconf - The minimum confirmations needed for a transaction to be considered as confirmed
 	 **/
-	public function listaccounts($minconf = 6)
+	public function listaccounts($minconf = 1)
 	{
 		return $this->_connect('listaccounts', array((int) $minconf));
 	}
